@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
@@ -55,7 +56,7 @@ fun ForgotPasswordScreen(
             .padding(24.dp)
     ) {
         IconButton(onClick = onNavigateBack, modifier = Modifier.align(Alignment.TopStart)) {
-            Icon(Icons.Filled.ArrowBack, tint = Color.White, contentDescription = null)
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, tint = Color.White, contentDescription = null)
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

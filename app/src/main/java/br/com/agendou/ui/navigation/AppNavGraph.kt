@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import br.com.agendou.ui.screens.auth.AuthNavigation
+import br.com.agendou.ui.screens.home.HomeScreen
 import br.com.agendou.ui.viewmodels.AuthViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -30,7 +31,7 @@ fun AppNavGraph() {
                 navController = navController,
                 onTimeout = {
                     if (isAuthenticated) {
-                        navController.navigate("home") {
+                        navController.navigate("auth") {
                             popUpTo("splash") { inclusive = true }
                         }
                     } else {
@@ -46,10 +47,9 @@ fun AppNavGraph() {
             AuthNavigation()
         }
         
-//        composable("home") {
-//            // Sua tela principal aqui
-//            // HomeScreen()
-//        }
+        composable("home") {
+//             HomeScreen()
+        }
 //        composable(
 //            route = "booking/{proId}",
 //            arguments = listOf(navArgument("proId") { type = NavType.StringType })

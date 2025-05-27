@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Usuários (clientes ou profissionais)
+    match /users/{userId} {
+      // Criação: só o próprio usuário recém-autenticado
+      allow create: if request.auth != null
+                    && request.auth.uid == userId;
+      // Leitura: qualquer usuário logado pode ler perfis
+      allow read:   if request.auth != null;
+      // Atualização: só o dono do perfil
+      allow update: if request.auth != null
+                    && request.auth.uid == userId;
+      // Nunca delete
+      allow delete: if false;
+    }
+
+    // Profissões estáticas (lista pré-definida)
+    match /professions/{professionId} {
+      // Leitura pública
+      allow read:  if true;
+      // Sem escrita via cliente
+      allow write: if false;
+    }
+
+    // Perfil complementar do profissional (biografia, telefone opcional)
+    match /professionals/{profId} {
+      // Criação: só quem é auth.uid == profId
+      allow create: if request.auth != null
+                    && request.auth.uid == profId;
+      // Leitura pública
+      allow read:   if true;
+      // Atualização: só o próprio profissional
+      allow update: if request.auth != null
+                    && request.auth.uid == profId;
+      allow delete: if false;
+    }
+
+    // Serviços publicados por profissionais
+    match /services/{serviceId} {
+      // Criação: auth.uid deve ser o profissionalId no payload
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.professionalId;
+      // Leitura pública
+      allow read:   if true;
+      // Atualização: só o dono do serviço
+      allow update: if request.auth != null
+                    && request.auth.uid == resource.data.professionalId
+                    // e não troca de dono
+                    && request.resource.data.professionalId == resource.data.professionalId;
+      // Soft-delete: permitimos “delete” como soft (campo deletedAt)
+      allow delete: if request.auth != null
+                    && request.auth.uid == resource.data.professionalId;
+    }
+
+    // Horários de trabalho do profissional
+    match /workSchedules/{scheduleId} {
+      // Criação/edição/exclusão: só o próprio profissional
+      allow create, update, delete: if request.auth != null
+                                     && request.auth.uid == request.resource.data.professionalId;
+      // Leitura pública (para gerar slots)
+      allow read:                    if true;
+    }
+
+    // Agendamentos feitos pelo cliente
+    match /bookings/{bookingId} {
+      // Criação: cliente autenticado deve ser exactly clientId e serviço existe
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.clientId
+                    && exists(/databases/$(database)/documents/services/$(request.resource.data.serviceId));
+      // Leitura: cliente ou profissional envolvido
+      allow read:   if request.auth != null
+                    && ( request.auth.uid == resource.data.clientId
+                      || request.auth.uid == resource.data.professionalId );
+      // Atualização (soft-delete): só cliente ou profissional, e idealmente só campo deletedAt
+      allow update: if request.auth != null
+                    && ( request.auth.uid == resource.data.clientId
+                      || request.auth.uid == resource.data.professionalId );
+      // Não permitir delete hard
+      allow delete: if false;
+    }
+
+    // Avaliações feitas pelo cliente após booking
+    match /reviews/{reviewId} {
+      // Criação: só o cliente do booking correspondente
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.clientId
+                    && exists(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId));
+      // Leitura: qualquer usuário autenticado
+      allow read:   if request.auth != null;
+      // Sem edição ou exclusão
+      allow update, delete: if false;
+    }
+
+  }
+}
