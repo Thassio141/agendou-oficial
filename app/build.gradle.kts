@@ -78,5 +78,6 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.analytics.ktx)
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
 }

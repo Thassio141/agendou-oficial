@@ -32,6 +32,7 @@ import br.com.agendou.ui.viewmodels.AuthViewModel
 fun LoginScreen(
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
+    onAuthSuccess: (br.com.agendou.domain.model.User) -> Unit = {},
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val gradient = Brush.verticalGradient(listOf(Color(0xFF0A2535), Color(0xFF13425A)))
@@ -135,7 +136,11 @@ fun LoginScreen(
             Spacer(Modifier.height(24.dp))
 
             Button(
-                onClick = { viewModel.signIn(email.trim(), password) },
+                onClick = { 
+                    viewModel.signIn(email.trim(), password) { user ->
+                        onAuthSuccess(user)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)

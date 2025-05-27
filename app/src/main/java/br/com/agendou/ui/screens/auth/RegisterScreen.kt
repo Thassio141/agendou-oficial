@@ -33,6 +33,7 @@ import br.com.agendou.ui.viewmodels.AuthViewModel
 @Composable
 fun RegisterScreen(
     onNavigateToLogin: () -> Unit,
+    onAuthSuccess: (br.com.agendou.domain.model.User) -> Unit = {},
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val gradient = Brush.verticalGradient(listOf(Color(0xFF0A2535), Color(0xFF13425A)))
@@ -200,7 +201,11 @@ fun RegisterScreen(
             Spacer(Modifier.height(32.dp))
 
             Button(
-                onClick = { viewModel.signUp(email.trim(), password, name.trim(), confirm.trim())},
+                onClick = { 
+                    viewModel.signUp(email.trim(), password, name.trim(), confirm.trim()) { user ->
+                        onAuthSuccess(user)
+                    }
+                },
                 enabled = !ui.isLoading && name.isNotBlank() && email.isNotBlank()
                         && password.isNotBlank() && confirm.isNotBlank() && password == confirm,
                 modifier = Modifier

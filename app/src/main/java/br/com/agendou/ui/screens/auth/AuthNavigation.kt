@@ -5,10 +5,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import br.com.agendou.domain.model.User
 
 @Composable
 fun AuthNavigation(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    onAuthSuccess: (User) -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -21,7 +23,8 @@ fun AuthNavigation(
                 },
                 onNavigateToForgotPassword = {
                     navController.navigate("forgot_password")
-                }
+                },
+                onAuthSuccess = onAuthSuccess
             )
         }
         
@@ -29,7 +32,8 @@ fun AuthNavigation(
             RegisterScreen(
                 onNavigateToLogin = {
                     navController.popBackStack("login", inclusive = false)
-                }
+                },
+                onAuthSuccess = onAuthSuccess
             )
         }
         

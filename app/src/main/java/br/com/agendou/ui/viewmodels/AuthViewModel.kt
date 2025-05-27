@@ -3,6 +3,8 @@ package br.com.agendou.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.agendou.domain.usecases.auth.*
+import br.com.agendou.domain.usecases.user.GetUserUseCase
+import br.com.agendou.domain.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -14,6 +16,7 @@ class AuthViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
     private val sendPasswordResetUseCase: SendPasswordResetUseCase,
     private val signOutUseCase: SignOutUseCase,
+    private val getUserUseCase: GetUserUseCase,
     getAuthStateUseCase: GetAuthStateUseCase
 ) : ViewModel() {
 
@@ -22,13 +25,23 @@ class AuthViewModel @Inject constructor(
 
     val isAuthenticated: Flow<Boolean> = getAuthStateUseCase()
 
-    fun signIn(email: String, password: String) {
+    fun signIn(email: String, password: String, onSuccess: (User) -> Unit = {}) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             
             signInUseCase(email, password)
-                .onSuccess {
-                    _uiState.value = _uiState.value.copy(isLoading = false)
+                .onSuccess { userId ->
+                    // Buscar dados do usuário após login bem-sucedido
+                    val user = getUserUseCase(userId)
+                    if (user != null) {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        onSuccess(user)
+                    } else {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = "Erro ao carregar dados do usuário"
+                        )
+                    }
                 }
                 .onFailure { error ->
                     _uiState.value = _uiState.value.copy(
@@ -39,7 +52,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signUp(email: String, password: String, name: String, confirmPassword: String) {
+    fun signUp(email: String, password: String, name: String, confirmPassword: String, onSuccess: (User) -> Unit = {}) {
         if (password != confirmPassword) {
             _uiState.value = _uiState.value.copy(error = "As senhas não coincidem")
             return
@@ -54,8 +67,18 @@ class AuthViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             
             signUpUseCase(email, password, name)
-                .onSuccess {
-                    _uiState.value = _uiState.value.copy(isLoading = false)
+                .onSuccess { userId ->
+                    // Buscar dados do usuário após cadastro bem-sucedido
+                    val user = getUserUseCase(userId)
+                    if (user != null) {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        onSuccess(user)
+                    } else {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = "Erro ao carregar dados do usuário"
+                        )
+                    }
                 }
                 .onFailure { error ->
                     _uiState.value = _uiState.value.copy(

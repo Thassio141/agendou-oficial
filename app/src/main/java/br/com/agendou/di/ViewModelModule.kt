@@ -25,12 +25,14 @@ object ViewModelModule {
         signUpUseCase: SignUpUseCase,
         sendPasswordResetUseCase: SendPasswordResetUseCase,
         signOutUseCase: SignOutUseCase,
+        getUserUseCase: GetUserUseCase,
         getAuthStateUseCase: GetAuthStateUseCase
     ): AuthViewModel = AuthViewModel(
         signInUseCase,
         signUpUseCase,
         sendPasswordResetUseCase,
         signOutUseCase,
+        getUserUseCase,
         getAuthStateUseCase
     )
     
