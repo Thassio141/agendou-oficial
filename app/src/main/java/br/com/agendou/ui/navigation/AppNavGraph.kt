@@ -46,10 +46,10 @@ fun AppNavGraph() {
             AuthNavigation()
         }
         
-        composable("home") {
-            // Sua tela principal aqui
-            // HomeScreen()
-        }
+//        composable("home") {
+//            // Sua tela principal aqui
+//            // HomeScreen()
+//        }
 //        composable(
 //            route = "booking/{proId}",
 //            arguments = listOf(navArgument("proId") { type = NavType.StringType })

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import br.com.agendou.domain.model.User
 import br.com.agendou.domain.usecases.user.CreateUserUseCase
 import br.com.agendou.domain.usecases.user.GetUserUseCase
+import br.com.agendou.domain.usecases.user.GetProfessionalsUseCase
 import br.com.agendou.domain.usecases.user.UpdatePhoneNumberUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,11 +19,15 @@ import javax.inject.Inject
 class UserViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
     private val createUserUseCase: CreateUserUseCase,
-    private val updatePhoneNumberUseCase: UpdatePhoneNumberUseCase
+    private val updatePhoneNumberUseCase: UpdatePhoneNumberUseCase,
+    private val getProfessionalsUseCase: GetProfessionalsUseCase
 ) : ViewModel() {
 
     private val _userState = MutableStateFlow<UserState>(UserState.Initial)
     val userState: StateFlow<UserState> = _userState
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
 
     private val _currentUser = MutableLiveData<User?>()
     val currentUser: LiveData<User?> = _currentUser
@@ -69,6 +74,31 @@ class UserViewModel @Inject constructor(
             }
         }
     }
+
+    fun loadProfessionals() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            try {
+                val professionals = getProfessionalsUseCase()
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    users = professionals,
+                    error = null
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.message ?: "Erro ao carregar profissionais"
+                )
+            }
+        }
+    }
+
+    data class UiState(
+        val isLoading: Boolean = false,
+        val users: List<User> = emptyList(),
+        val error: String? = null
+    )
 
     sealed class UserState {
         object Initial : UserState()

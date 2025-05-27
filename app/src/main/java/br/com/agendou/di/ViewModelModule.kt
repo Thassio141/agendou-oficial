@@ -39,11 +39,13 @@ object ViewModelModule {
     fun provideUserViewModel(
         getUserUseCase: GetUserUseCase,
         createUserUseCase: CreateUserUseCase,
-        updatePhoneNumberUseCase: UpdatePhoneNumberUseCase
+        updatePhoneNumberUseCase: UpdatePhoneNumberUseCase,
+        getProfessionalsUseCase : GetProfessionalsUseCase
     ): UserViewModel = UserViewModel(
         getUserUseCase,
         createUserUseCase,
-        updatePhoneNumberUseCase
+        updatePhoneNumberUseCase,
+        getProfessionalsUseCase
     )
     
     @Provides

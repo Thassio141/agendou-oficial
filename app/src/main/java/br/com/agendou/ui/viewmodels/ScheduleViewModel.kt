@@ -20,6 +20,9 @@ class ScheduleViewModel @Inject constructor(
     private val _schedulesState = MutableStateFlow<SchedulesState>(SchedulesState.Initial)
     val schedulesState: StateFlow<SchedulesState> = _schedulesState
 
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
+
     private val _scheduleOperationState = MutableStateFlow<ScheduleOperationState>(ScheduleOperationState.Initial)
     val scheduleOperationState: StateFlow<ScheduleOperationState> = _scheduleOperationState
 
@@ -49,6 +52,30 @@ class ScheduleViewModel @Inject constructor(
             }
         }
     }
+
+    fun loadAvailability(serviceId: String) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            try {
+                // TODO: Implementar lógica de verificação de disponibilidade
+                // Por enquanto, apenas simula carregamento
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = null
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.message ?: "Erro ao carregar disponibilidade"
+                )
+            }
+        }
+    }
+
+    data class UiState(
+        val isLoading: Boolean = false,
+        val error: String? = null
+    )
 
     sealed class SchedulesState {
         object Initial : SchedulesState()

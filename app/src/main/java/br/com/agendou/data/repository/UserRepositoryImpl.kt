@@ -26,4 +26,9 @@ class UserRepositoryImpl @Inject constructor(
         val updated = existing.copy(phoneNumber = phoneNumber)
         dataSource.createOrUpdateUser(updated)
     }
+
+    override suspend fun getProfessionals(): List<User> {
+        val dtos = dataSource.getProfessionals()
+        return dtos.map { it.toDomain() }
+    }
 }

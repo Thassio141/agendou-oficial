@@ -47,6 +47,9 @@ object UseCaseModule {
     @Provides @Singleton
     fun provideUpdatePhoneNumberUseCase(repository: UserRepository) = UpdatePhoneNumberUseCase(repository)
     
+    @Provides @Singleton
+    fun provideGetProfessionalsUseCase(repository: UserRepository) = GetProfessionalsUseCase(repository)
+    
     // Booking use cases
     @Provides @Singleton
     fun provideGetBookingsForProfessionalOnDateUseCase(repository: BookingRepository) = 

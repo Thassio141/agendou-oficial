@@ -27,6 +27,9 @@ class BookingViewModel @Inject constructor(
     private val _bookingsState = MutableStateFlow<BookingsState>(BookingsState.Initial)
     val bookingsState: StateFlow<BookingsState> = _bookingsState
 
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
+
     private val _scheduleState = MutableStateFlow<ScheduleState>(ScheduleState.Initial)
     val scheduleState: StateFlow<ScheduleState> = _scheduleState
 
@@ -85,6 +88,32 @@ class BookingViewModel @Inject constructor(
             }
         }
     }
+
+    fun loadBookingsForClient(clientId: String) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            try {
+                // TODO: Implementar caso de uso para buscar agendamentos do cliente
+                // Por enquanto, retorna lista vazia
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    bookings = emptyList(),
+                    error = null
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.message ?: "Erro ao carregar agendamentos"
+                )
+            }
+        }
+    }
+
+    data class UiState(
+        val isLoading: Boolean = false,
+        val bookings: List<Booking> = emptyList(),
+        val error: String? = null
+    )
 
     sealed class BookingsState {
         object Initial : BookingsState()

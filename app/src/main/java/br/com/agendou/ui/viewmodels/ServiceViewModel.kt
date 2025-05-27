@@ -22,6 +22,9 @@ class ServiceViewModel @Inject constructor(
     private val _servicesState = MutableStateFlow<ServicesState>(ServicesState.Initial)
     val servicesState: StateFlow<ServicesState> = _servicesState
 
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
+
     private val _serviceOperationState = MutableStateFlow<ServiceOperationState>(ServiceOperationState.Initial)
     val serviceOperationState: StateFlow<ServiceOperationState> = _serviceOperationState
 
@@ -33,6 +36,25 @@ class ServiceViewModel @Inject constructor(
                 _servicesState.value = ServicesState.Success(services)
             } catch (e: Exception) {
                 _servicesState.value = ServicesState.Error(e.message ?: "Erro ao buscar serviços")
+            }
+        }
+    }
+
+    fun loadServicesForProfessional(professionalId: String) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            try {
+                val services = getServicesUseCase(professionalId)
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    services = services,
+                    error = null
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.message ?: "Erro ao carregar serviços"
+                )
             }
         }
     }
@@ -66,6 +88,12 @@ class ServiceViewModel @Inject constructor(
             }
         }
     }
+
+    data class UiState(
+        val isLoading: Boolean = false,
+        val services: List<Service> = emptyList(),
+        val error: String? = null
+    )
 
     sealed class ServicesState {
         object Initial : ServicesState()

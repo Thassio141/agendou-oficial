@@ -50,7 +50,7 @@ class BookingRepositoryImpl @Inject constructor(
     override suspend fun cancelBooking(bookingId: String) {
         val booking = dataSource.getBookingById(bookingId) ?: return
         val updated = booking.copy(
-            status = BookingStatus.CANCELED.name,
+            status = BookingStatus.CANCELLED.name,
             deletedAt = Timestamp.now()
         )
         dataSource.updateBooking(updated)
