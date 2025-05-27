@@ -1,6 +1,7 @@
 package br.com.agendou.di
 
 import br.com.agendou.data.datasource.*
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -13,6 +14,13 @@ import javax.inject.Singleton
 object DataSourceModule {
     @Provides @Singleton
     fun provideFirestore() = FirebaseFirestore.getInstance()
+
+    @Provides @Singleton
+    fun provideFirebaseAuth() = FirebaseAuth.getInstance()
+
+    @Provides @Singleton
+    fun provideFirebaseAuthDataSource(firebaseAuth: FirebaseAuth) =
+        FirebaseAuthDataSource(firebaseAuth)
 
     @Provides @Singleton
     fun provideUserDataSource(firestore: FirebaseFirestore) =

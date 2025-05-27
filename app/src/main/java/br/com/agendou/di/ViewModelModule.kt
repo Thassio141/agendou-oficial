@@ -1,5 +1,6 @@
 package br.com.agendou.di
 
+import br.com.agendou.domain.usecases.auth.*
 import br.com.agendou.domain.usecases.booking.*
 import br.com.agendou.domain.usecases.profession.*
 import br.com.agendou.domain.usecases.review.*
@@ -16,6 +17,22 @@ import dagger.hilt.android.scopes.ViewModelScoped
 @Module
 @InstallIn(ViewModelComponent::class)
 object ViewModelModule {
+    
+    @Provides
+    @ViewModelScoped
+    fun provideAuthViewModel(
+        signInUseCase: SignInUseCase,
+        signUpUseCase: SignUpUseCase,
+        sendPasswordResetUseCase: SendPasswordResetUseCase,
+        signOutUseCase: SignOutUseCase,
+        getAuthStateUseCase: GetAuthStateUseCase
+    ): AuthViewModel = AuthViewModel(
+        signInUseCase,
+        signUpUseCase,
+        sendPasswordResetUseCase,
+        signOutUseCase,
+        getAuthStateUseCase
+    )
     
     @Provides
     @ViewModelScoped

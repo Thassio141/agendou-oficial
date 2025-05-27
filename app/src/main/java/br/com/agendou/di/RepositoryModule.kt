@@ -13,6 +13,11 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
     @Provides @Singleton
+    fun provideAuthRepository(
+        firebaseAuthDataSource: FirebaseAuthDataSource
+    ): AuthRepository = AuthRepositoryImpl(firebaseAuthDataSource)
+
+    @Provides @Singleton
     fun provideUserRepository(
         ds: FirestoreUserDataSource
     ): UserRepository = UserRepositoryImpl(ds)

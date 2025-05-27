@@ -1,6 +1,7 @@
 package br.com.agendou.di
 
 import br.com.agendou.domain.repository.*
+import br.com.agendou.domain.usecases.auth.*
 import br.com.agendou.domain.usecases.booking.*
 import br.com.agendou.domain.usecases.profession.*
 import br.com.agendou.domain.usecases.review.*
@@ -16,6 +17,25 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
+    
+    // Auth use cases
+    @Provides @Singleton
+    fun provideSignInUseCase(repository: AuthRepository) = SignInUseCase(repository)
+    
+    @Provides @Singleton
+    fun provideSignUpUseCase(
+        authRepository: AuthRepository,
+        userRepository: UserRepository
+    ) = SignUpUseCase(authRepository, userRepository)
+    
+    @Provides @Singleton
+    fun provideSendPasswordResetUseCase(repository: AuthRepository) = SendPasswordResetUseCase(repository)
+    
+    @Provides @Singleton
+    fun provideSignOutUseCase(repository: AuthRepository) = SignOutUseCase(repository)
+    
+    @Provides @Singleton
+    fun provideGetAuthStateUseCase(repository: AuthRepository) = GetAuthStateUseCase(repository)
     
     // User use cases
     @Provides @Singleton
