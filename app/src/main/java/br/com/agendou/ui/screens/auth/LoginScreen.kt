@@ -1,5 +1,8 @@
+// ui/screens/auth/LoginScreen.kt
 package br.com.agendou.ui.screens.auth
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -11,13 +14,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import br.com.agendou.R
 import br.com.agendou.ui.viewmodels.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,132 +34,120 @@ fun LoginScreen(
     onNavigateToForgotPassword: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
+    val gradient = Brush.verticalGradient(listOf(Color(0xFF0A2535), Color(0xFF13425A)))
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    
-    val uiState by viewModel.uiState.collectAsState()
+    var vis by remember { mutableStateOf(false) }
+    val ui by viewModel.uiState.collectAsState()
 
-    // Mostrar erro se houver
-    LaunchedEffect(uiState.error) {
-        uiState.error?.let {
-            // Aqui você pode mostrar um SnackBar ou Toast
-        }
-    }
-
-    Column(
-        modifier = Modifier
+    Box(
+        Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(gradient)
+            .padding(24.dp)
     ) {
-        Text(
-            text = "Bem-vindo de volta!",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        Text(
-            text = "Faça login para continuar",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
-        
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Campo Email
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Campo Senha
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Senha") },
-            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-            trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(
-                        if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                        contentDescription = if (passwordVisible) "Ocultar senha" else "Mostrar senha"
-                    )
-                }
-            },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-        
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Link Esqueci minha senha
-        TextButton(
-            onClick = onNavigateToForgotPassword,
-            modifier = Modifier.align(Alignment.End)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.align(Alignment.TopCenter)
         ) {
-            Text("Esqueci minha senha")
+            Spacer(Modifier.height(40.dp))
+            Image(
+                painter = painterResource(R.drawable.logotipo_agendou_branco_png),
+                contentDescription = null,
+                modifier = Modifier.size(200.dp)
+            )
         }
-        
-        Spacer(modifier = Modifier.height(24.dp))
 
-        // Botão Login
-        Button(
-            onClick = { 
-                viewModel.clearError()
-                viewModel.signIn(email, password) 
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !uiState.isLoading && email.isNotBlank() && password.isNotBlank()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.align(Alignment.Center)
         ) {
-            if (uiState.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Text("Entrar")
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Bem-vindo de volta!",
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                color = Color.White
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Faça login para continuar",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color(0xFFB0BEC5)
+            )
+            Spacer(Modifier.height(32.dp))
 
-        // Link para cadastro
-        Row {
-            Text("Não tem uma conta? ")
-            TextButton(onClick = onNavigateToRegister) {
-                Text("Cadastre-se")
-            }
-        }
+            @Composable
+            fun Modifier.field() = this
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
 
-        // Mostrar erro
-        uiState.error?.let { error ->
-            Spacer(modifier = Modifier.height(16.dp))
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer
+            OutlinedTextField(
+                value = email, onValueChange = { email = it },
+                placeholder = { Text("Email") },
+                leadingIcon = { Icon(Icons.Default.Email, null) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.field(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color(0x33FFFFFF),
+                    unfocusedContainerColor = Color(0x33FFFFFF),
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedPlaceholderColor = Color(0x99FFFFFF),
+                    unfocusedPlaceholderColor = Color(0x99FFFFFF),
+                    cursorColor = Color.White
                 )
+            )
+            Spacer(Modifier.height(16.dp))
+            OutlinedTextField(
+                value = password, onValueChange = { password = it },
+                placeholder = { Text("Senha") },
+                leadingIcon = { Icon(Icons.Default.Lock, null) },
+                trailingIcon = {
+                    IconButton ( onClick = { vis = !vis }){
+                        Icon(
+                            if (vis) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                },
+                visualTransformation = if (vis) VisualTransformation.None else PasswordVisualTransformation(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.field(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color(0x33FFFFFF),
+                    unfocusedContainerColor = Color(0x33FFFFFF),
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedPlaceholderColor = Color(0x99FFFFFF),
+                    unfocusedPlaceholderColor = Color(0x99FFFFFF),
+                    cursorColor = Color.White
+                )
+            )
+            Spacer(Modifier.height(8.dp))
+            TextButton(onNavigateToForgotPassword) { Text("Esqueceu a senha?", color = Color.White) }
+            Spacer(Modifier.height(24.dp))
+
+            Button(
+                onClick = { viewModel.signIn(email.trim(), password) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .clip(MaterialTheme.shapes.large),
+                enabled = !ui.isLoading,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
-                Text(
-                    text = error,
-                    modifier = Modifier.padding(16.dp),
-                    color = MaterialTheme.colorScheme.onErrorContainer
-                )
+                if (ui.isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                else Text("Entrar", color = Color(0xFF0A2535))
             }
+            Spacer(Modifier.height(16.dp))
+            TextButton(onNavigateToRegister) { Text("Cadastre-se", color = Color.White) }
         }
     }
-} 
+}

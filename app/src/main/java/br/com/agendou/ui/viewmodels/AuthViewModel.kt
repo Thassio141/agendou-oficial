@@ -14,7 +14,7 @@ class AuthViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
     private val sendPasswordResetUseCase: SendPasswordResetUseCase,
     private val signOutUseCase: SignOutUseCase,
-    private val getAuthStateUseCase: GetAuthStateUseCase
+    getAuthStateUseCase: GetAuthStateUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())

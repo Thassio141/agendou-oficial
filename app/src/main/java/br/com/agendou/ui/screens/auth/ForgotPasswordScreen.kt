@@ -1,42 +1,37 @@
 package br.com.agendou.ui.screens.auth
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import br.com.agendou.R
 import br.com.agendou.ui.viewmodels.AuthViewModel
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,127 +39,103 @@ fun ForgotPasswordScreen(
     onNavigateBack: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
+    val gradient = Brush.verticalGradient(listOf(Color(0xFF0A2535), Color(0xFF13425A)))
     var email by remember { mutableStateOf("") }
-    val uiState by viewModel.uiState.collectAsState()
+    val ui by viewModel.uiState.collectAsState()
 
-    // Limpar estado quando sair da tela
+    // limpa ao sair
     DisposableEffect(Unit) {
-        onDispose {
-            viewModel.clearPasswordResetSent()
-            viewModel.clearError()
-        }
+        onDispose { viewModel.clearError(); viewModel.clearPasswordResetSent() }
     }
 
-    Column(
-        modifier = Modifier
+    Box(
+        Modifier
             .fillMaxSize()
+            .background(gradient)
             .padding(24.dp)
     ) {
-        // Botão voltar
-        IconButton(
-            onClick = onNavigateBack,
-            modifier = Modifier.align(Alignment.Start)
-        ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
+        IconButton(onClick = onNavigateBack, modifier = Modifier.align(Alignment.TopStart)) {
+            Icon(Icons.Filled.ArrowBack, tint = Color.White, contentDescription = null)
         }
-        
-        Spacer(modifier = Modifier.height(32.dp))
-
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.align(Alignment.TopCenter)
+        ) {
+            Spacer(Modifier.height(40.dp))
+            Image(
+                painter = painterResource(R.drawable.logotipo_agendou_branco_png),
+                contentDescription = null,
+                modifier = Modifier.size(200.dp)
+            )
+        }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.align(Alignment.Center)
         ) {
             Text(
-                text = "Esqueci minha senha",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+                "Esqueci minha senha",
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                color = Color.White
             )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
+            Spacer(Modifier.height(8.dp))
             Text(
-                text = "Digite seu email para receber as instruções de recuperação",
+                "Digite seu email para receber instruções",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
+                color = Color(0xFFB0BEC5),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
-            
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(Modifier.height(32.dp))
 
-            // Campo Email
+            @Composable
+            fun Modifier.field() = this
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                value = email, onValueChange = { email = it },
+                placeholder = { Text("Email") },
+                leadingIcon = { Icon(Icons.Default.Email, null) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                modifier = Modifier.field(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color(0x33FFFFFF),
+                    unfocusedContainerColor = Color(0x33FFFFFF),
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedPlaceholderColor = Color(0x99FFFFFF),
+                    unfocusedPlaceholderColor = Color(0x99FFFFFF),
+                    cursorColor = Color.White
+                )
             )
-            
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(24.dp))
 
-            // Botão Enviar
             Button(
-                onClick = { 
-                    viewModel.clearError()
-                    viewModel.sendPasswordReset(email) 
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.isLoading && email.isNotBlank()
+                onClick = { viewModel.sendPasswordReset(email.trim()) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .clip(MaterialTheme.shapes.large),
+                enabled = !ui.isLoading,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                } else {
-                    Text("Enviar instruções")
-                }
+                if (ui.isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                else Text("Enviar", color = Color(0xFF0A2535))
             }
 
-            // Mostrar sucesso
-            if (uiState.passwordResetSent) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Email enviado!",
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Verifique sua caixa de entrada e siga as instruções para redefinir sua senha.",
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                }
+            Spacer(Modifier.height(16.dp))
+            if (ui.passwordResetSent) {
+                Text("Email enviado! Confira sua caixa de entrada.",
+                    color = Color(0xFFB0BEC5), textAlign = TextAlign.Center)
             }
-
-            // Mostrar erro
-            uiState.error?.let { error ->
-                Spacer(modifier = Modifier.height(16.dp))
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
-                ) {
-                    Text(
-                        text = error,
-                        modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                }
+            ui.error?.let {
+                Spacer(Modifier.height(16.dp))
+                Text(it, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
             }
         }
     }
-} 
+}

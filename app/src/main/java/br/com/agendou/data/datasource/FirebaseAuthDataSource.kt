@@ -48,7 +48,7 @@ class FirebaseAuthDataSource @Inject constructor(
         }
     }
 
-    suspend fun signOut(): Result<Unit> {
+    fun signOut(): Result<Unit> {
         return try {
             firebaseAuth.signOut()
             Result.success(Unit)
