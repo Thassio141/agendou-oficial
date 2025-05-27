@@ -47,6 +47,11 @@ class BookingRepositoryImpl @Inject constructor(
         return dto.toDomain()
     }
 
+    override suspend fun reserve(request: ScheduleBookingRequest): Booking {
+        val dto = dataSource.reserveBooking(request)
+        return dto.toDomain()
+    }
+
     override suspend fun cancelBooking(bookingId: String) {
         val booking = dataSource.getBookingById(bookingId) ?: return
         val updated = booking.copy(

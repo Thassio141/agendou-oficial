@@ -34,6 +34,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleScreen(
+    professionalId: String,
     serviceId: String,
     onNavigateBack: () -> Unit,
     onConfirmBooking: (String, String, String) -> Unit, // serviceId, date, time
@@ -49,19 +50,17 @@ fun ScheduleScreen(
         (0..29).map { LocalDate.now().plusDays(it.toLong()) }
     }
     
-    // Horários disponíveis (exemplo - você pode implementar lógica mais complexa)
-    val availableTimes = remember {
-        listOf(
-            "08:00", "08:30", "09:00", "09:30", "10:00", "10:30",
-            "11:00", "11:30", "14:00", "14:30", "15:00", "15:30",
-            "16:00", "16:30", "17:00", "17:30", "18:00"
-        )
+    LaunchedEffect(professionalId) {
+        // Carregar disponibilidade para o profissional
+        viewModel.loadAvailability(professionalId)
     }
 
-    LaunchedEffect(serviceId) {
-        // Carregar disponibilidade para o serviço
-        viewModel.loadAvailability(serviceId)
-    }
+    // Extrair horários disponíveis do uiState (slots livres)
+    val availableTimesForSelectedDate: List<String> = selectedDate?.let { date ->
+        uiState.slots.filter { (dateTime, state) ->
+            state == br.com.agendou.domain.enums.SlotState.FREE && dateTime.toLocalDate() == date
+        }.map { it.key.toLocalTime().toString() }.sorted()
+    } ?: emptyList()
 
     Column(
         modifier = Modifier
@@ -193,7 +192,7 @@ fun ScheduleScreen(
                             Spacer(modifier = Modifier.height(16.dp))
 
                             // Time slots grid
-                            val chunkedTimes = availableTimes.chunked(3)
+                            val chunkedTimes = availableTimesForSelectedDate.chunked(3)
                             chunkedTimes.forEach { timeRow ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),

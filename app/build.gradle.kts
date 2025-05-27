@@ -78,6 +78,10 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.messaging.ktx)
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    ksp("androidx.hilt:hilt-compiler:1.0.0")
 
 }

@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import br.com.agendou.domain.model.WorkSchedule
 import br.com.agendou.domain.usecases.schedule.GetWorkSchedulesUseCase
 import br.com.agendou.domain.usecases.schedule.SaveWorkScheduleUseCase
+import br.com.agendou.domain.usecases.schedule.GenerateSlotsUseCase
+import br.com.agendou.domain.enums.SlotState
+import java.time.LocalDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
     private val getWorkSchedulesUseCase: GetWorkSchedulesUseCase,
-    private val saveWorkScheduleUseCase: SaveWorkScheduleUseCase
+    private val saveWorkScheduleUseCase: SaveWorkScheduleUseCase,
+    private val generateSlotsUseCase: GenerateSlotsUseCase
 ) : ViewModel() {
 
     private val _schedulesState = MutableStateFlow<SchedulesState>(SchedulesState.Initial)
@@ -53,14 +57,17 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
-    fun loadAvailability(serviceId: String) {
+    fun loadAvailability(professionalId: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             try {
-                // TODO: Implementar lógica de verificação de disponibilidade
-                // Por enquanto, apenas simula carregamento
+                val start = LocalDateTime.now().withHour(0).withMinute(0)
+                val end = start.plusDays(30).withHour(23).withMinute(59)
+
+                val slots = generateSlotsUseCase(professionalId, start, end)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
+                    slots = slots,
                     error = null
                 )
             } catch (e: Exception) {
@@ -74,6 +81,7 @@ class ScheduleViewModel @Inject constructor(
 
     data class UiState(
         val isLoading: Boolean = false,
+        val slots: Map<LocalDateTime, SlotState> = emptyMap(),
         val error: String? = null
     )
 

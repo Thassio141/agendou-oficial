@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
@@ -29,6 +30,7 @@ import java.util.*
 @Composable
 fun ProfessionalHomeScreen(
     onSignOut: () -> Unit,
+    onManageServices: () -> Unit = {},
     viewModel: BookingViewModel = hiltViewModel()
 ) {
     var selectedTab by remember { mutableStateOf(0) }
@@ -60,12 +62,17 @@ fun ProfessionalHomeScreen(
                 fontWeight = FontWeight.Bold
             )
             
-            IconButton(onClick = onSignOut) {
-                Icon(
-                    Icons.Default.ExitToApp,
-                    contentDescription = "Sair",
-                    tint = MaterialTheme.colorScheme.primary
-                )
+            Row {
+                IconButton(onClick = onManageServices) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Serviços")
+                }
+                IconButton(onClick = onSignOut) {
+                    Icon(
+                        Icons.Default.ExitToApp,
+                        contentDescription = "Sair",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
         

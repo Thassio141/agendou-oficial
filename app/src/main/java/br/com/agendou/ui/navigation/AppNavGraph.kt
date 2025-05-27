@@ -19,6 +19,7 @@ import br.com.agendou.ui.screens.bookings.BookingFormScreen
 import br.com.agendou.ui.screens.home.ClientHomeScreen
 import br.com.agendou.ui.screens.home.ProfessionalHomeScreen
 import br.com.agendou.ui.screens.splash.SplashScreen
+import br.com.agendou.ui.screens.service.ServiceManagementScreen
 import br.com.agendou.ui.viewmodels.AuthViewModel
 import br.com.agendou.ui.viewmodels.UserViewModel
 
@@ -126,7 +127,17 @@ fun AppNavGraph() {
                     navController.navigate("auth") {
                         popUpTo(0) { inclusive = true }
                     }
+                },
+                onManageServices = {
+                    navController.navigate("manage_services")
                 }
+            )
+        }
+
+        composable("manage_services") {
+            ServiceManagementScreen(
+                professionalId = currentUser?.id ?: "",
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

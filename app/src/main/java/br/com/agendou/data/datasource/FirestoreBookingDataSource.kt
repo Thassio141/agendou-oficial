@@ -7,6 +7,8 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import br.com.agendou.domain.repository.ScheduleBookingRequest
+import br.com.agendou.util.toTimestamp
 
 class FirestoreBookingDataSource @Inject constructor(
     private val firestore: FirebaseFirestore
@@ -47,5 +49,35 @@ class FirestoreBookingDataSource @Inject constructor(
 
     suspend fun updateBooking(booking: BookingDto) {
         bookings.document(booking.id).set(booking).await()
+    }
+
+    suspend fun reserveBooking(request: ScheduleBookingRequest): BookingDto {
+        val conflicting = bookings
+            .whereEqualTo("professionalId", request.professionalId)
+            .whereLessThan("startTime", request.endTime.toTimestamp())
+            .whereGreaterThan("endTime", request.startTime.toTimestamp())
+            .whereEqualTo("deletedAt", null)
+            .get()
+            .await()
+            .toObjects(BookingDto::class.java)
+
+        if (conflicting.isNotEmpty()) {
+            throw IllegalStateException("Horário já reservado")
+        }
+
+        val dto = BookingDto(
+            id = java.util.UUID.randomUUID().toString(),
+            clientId = request.clientId,
+            professionalId = request.professionalId,
+            serviceId = request.serviceId,
+            startTime = request.startTime.toTimestamp(),
+            endTime = request.endTime.toTimestamp(),
+            status = "CONFIRMED",
+            createdAt = com.google.firebase.Timestamp.now(),
+            deletedAt = null
+        )
+
+        bookings.document(dto.id).set(dto).await()
+        return dto
     }
 } 

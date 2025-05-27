@@ -9,5 +9,6 @@ interface BookingRepository {
         date: LocalDateTime
     ): List<Booking>
     suspend fun scheduleBooking(request: ScheduleBookingRequest): Booking
+    suspend fun reserve(request: ScheduleBookingRequest): Booking
     suspend fun cancelBooking(bookingId: String): Unit
 }

@@ -6,8 +6,10 @@ import br.com.agendou.domain.usecases.booking.*
 import br.com.agendou.domain.usecases.profession.*
 import br.com.agendou.domain.usecases.review.*
 import br.com.agendou.domain.usecases.schedule.*
+import br.com.agendou.domain.usecases.schedule.GenerateSlotsUseCase
 import br.com.agendou.domain.usecases.service.*
 import br.com.agendou.domain.usecases.user.*
+import br.com.agendou.domain.usecases.booking.ReserveBookingUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -67,6 +69,9 @@ object UseCaseModule {
         scheduleRepository: WorkScheduleRepository
     ) = CheckAvailabilityUseCase(bookingRepository, scheduleRepository)
     
+    @Provides @Singleton
+    fun provideReserveBookingUseCase(repository: BookingRepository) = ReserveBookingUseCase(repository)
+    
     // Service use cases
     @Provides @Singleton
     fun provideGetServicesForProfessionalUseCase(repository: ServiceRepository) = 
@@ -86,6 +91,12 @@ object UseCaseModule {
     @Provides @Singleton
     fun provideSaveWorkScheduleUseCase(repository: WorkScheduleRepository) = 
         SaveWorkScheduleUseCase(repository)
+    
+    @Provides @Singleton
+    fun provideGenerateSlotsUseCase(
+        scheduleRepository: WorkScheduleRepository,
+        bookingRepository: BookingRepository
+    ) = GenerateSlotsUseCase(scheduleRepository, bookingRepository)
     
     // Review use cases
     @Provides @Singleton
